@@ -17,6 +17,7 @@ func main() {
 
 	// Root page handler function - All requests for 0.0.0.0:8082/ will be handle by this request
 	mux.HandleFunc("/", index)
+	mux.HandleFunc("/err", errHandler)
 
 	// Create the server and start it
 	server := &http.Server{
