@@ -15,12 +15,12 @@ func main() {
 	files := http.FileServer(http.Dir("public"))
 	mux.Handle("/static/", http.StripPrefix("/static/", files))
 
-	// Root page handler function - All requests for 0.0.0.0:8081/ will be handle by this request
+	// Root page handler function - All requests for 0.0.0.0:8082/ will be handle by this request
 	mux.HandleFunc("/", index)
 
 	// Create the server and start it
 	server := &http.Server{
-		Addr:    "0.0.0.0:8081",
+		Addr:    "0.0.0.0:8082",
 		Handler: mux,
 	}
 	server.ListenAndServe()
