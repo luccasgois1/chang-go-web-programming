@@ -17,7 +17,15 @@ func main() {
 
 	// Root page handler function - All requests for 0.0.0.0:8082/ will be handle by this request
 	mux.HandleFunc("/", index)
+	// Error page handler function - If a page fails to load for some reason the user should be redirected to this page
 	mux.HandleFunc("/err", errHandler)
+
+	// Authentication routes
+	mux.HandleFunc("/authenticate", authenticate)
+	mux.HandleFunc("/login", login)
+	mux.HandleFunc("/logout", logout)
+	mux.HandleFunc("/signup", signup)
+	mux.HandleFunc("/signup_account", signupAccount)
 
 	// Create the server and start it
 	server := &http.Server{

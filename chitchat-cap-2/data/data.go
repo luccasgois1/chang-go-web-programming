@@ -1,6 +1,7 @@
 package data
 
 import (
+	"crypto/sha1"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -76,4 +77,9 @@ func overwriteConfigDBWithEnvVariables() {
 	if os.Getenv("POSTGRES_PASSWORD") != "" {
 		configDB.Password = os.Getenv("POSTGRES_PASSWORD")
 	}
+}
+
+func Encrypt(plaintext string) (cryptedtext string) {
+	cryptedtext = fmt.Sprintf("%x", sha1.Sum([]byte(plaintext)))
+	return
 }
