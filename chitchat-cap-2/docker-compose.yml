@@ -1,0 +1,31 @@
+
+services:
+  chitchat-db:
+    image: postgres:15
+    container_name: chitchat-db
+    restart: always
+    shm_size: 128mb
+    environment:
+      - POSTGRES_DB=chitchat
+    env_file:
+      - .env
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data/setup.sql:/docker-entrypoint-initdb.d/setup.sql
+    networks:
+      - chitchat
+
+  chitchat-app:
+    build: .
+    container_name: chitchat-app
+    depends_on:
+      - chitchat-db
+    ports:
+      - 8081:8081
+    networks:
+      - chitchat
+
+networks:
+  chitchat:
+    driver: bridge
