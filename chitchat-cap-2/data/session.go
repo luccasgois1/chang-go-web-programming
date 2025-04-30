@@ -15,6 +15,13 @@ type Session struct {
 	CreatedAt time.Time
 }
 
+func (session Session) User() (user User) {
+	user = User{}
+	Db.QueryRow("SELECT id, uuid, name, email, password, created_at FROM users WHERE id = $1", session.UserId).
+		Scan(&user.Id, &user.Uuid, &user.Name, &user.Email, &user.Password, &user.CreatedAt)
+	return
+}
+
 func (session Session) IsEmpty() bool {
 	return session.Uuid == ""
 }
@@ -53,6 +60,13 @@ func CreateSession(user *User) (session Session) {
 	if err != nil {
 		log.Println("error scaning session to return", err)
 	}
+	return
+}
+
+func SessionByUUID(uuid string) (session Session) {
+	session = Session{}
+	Db.QueryRow("SELECT id, uuid, email, user_id, created_at FROM sessions WHERE uuid = $1;", uuid).
+		Scan(&session.Id, &session.Uuid, &session.Email, &session.UserId, &session.CreatedAt)
 	return
 }
 

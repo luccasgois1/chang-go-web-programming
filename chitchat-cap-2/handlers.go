@@ -139,3 +139,88 @@ func isUserInSession(w http.ResponseWriter, r *http.Request) bool {
 	session := data.Session{Uuid: cookie.Value}
 	return session.IsValid()
 }
+
+func getSessionUser(w http.ResponseWriter, r *http.Request) (user data.User) {
+	user = data.User{}
+	cookie, err := r.Cookie("_cookie")
+	if err != nil {
+		log.Println("error: unable to get cookie from request", err)
+		return
+	}
+	session := data.SessionByUUID(cookie.Value)
+	user = session.User()
+	return
+}
+
+func newThread(w http.ResponseWriter, r *http.Request) {
+	if isUserInSession(w, r) {
+		generateHTML(w, nil, "layout", "private.navbar", "new.thread")
+	} else {
+		http.Redirect(w, r, "/login", http.StatusFound)
+	}
+}
+
+func createThread(w http.ResponseWriter, r *http.Request) {
+	if isUserInSession(w, r) {
+		err := r.ParseForm()
+		if err != nil {
+			log.Println("error: parsing form to create thread failed", err)
+		}
+		user := getSessionUser(w, r)
+		if user.IsEmpty() {
+			log.Println("error: cannot find user from session")
+		}
+		topic := r.PostFormValue("topic")
+		_, err = data.CreateThread(&user, topic)
+		if err != nil {
+			log.Println("error: failed to create thread from form", err)
+		}
+		http.Redirect(w, r, "/", http.StatusFound)
+	} else {
+		http.Redirect(w, r, "/login", http.StatusFound)
+	}
+}
+
+func readThread(w http.ResponseWriter, r *http.Request) {
+	vals := r.URL.Query()
+	uuid := vals.Get("id")
+	thread, err := data.ThreadByUUID(uuid)
+	if err != nil {
+		log.Println("error: not able to get thread by uuid", err)
+		redirectToErrorPage(w, r, "Cannot read thread")
+	} else {
+		if isUserInSession(w, r) {
+			generateHTML(w, &thread, "layout", "private.navbar", "private.thread")
+		} else {
+			generateHTML(w, &thread, "layout", "public.navbar", "public.thread")
+		}
+	}
+}
+
+func postThread(w http.ResponseWriter, r *http.Request) {
+	if isUserInSession(w, r) {
+		err := r.ParseForm()
+		if err != nil {
+			log.Println("error: cannot parse the form to post thread", err)
+		}
+		user := getSessionUser(w, r)
+		if user.IsEmpty() {
+			log.Println("error: cannot get user from session")
+		}
+		body := r.PostFormValue("body")
+		uuid := r.PostFormValue("uuid")
+		thread, err := data.ThreadByUUID(uuid)
+		if err != nil {
+			log.Println("error: not able to get thread by uuid", err)
+			redirectToErrorPage(w, r, "Cannot read thread")
+			return
+		}
+		_, err = data.CreatePost(&user, &thread, body)
+		if err != nil {
+			log.Println("error: not able to create a post")
+			redirectToErrorPage(w, r, "Cannot create a post")
+		}
+		url := fmt.Sprint("/thread/read?id=", uuid)
+		http.Redirect(w, r, url, http.StatusFound)
+	}
+}

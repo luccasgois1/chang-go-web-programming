@@ -25,6 +25,13 @@ func UserByEmail(email string) (user User) {
 	return
 }
 
+func UserByUUID(uuid string) (user User) {
+	user = User{}
+	Db.QueryRow("SELECT id, uuid, name, email, password, created_at FROM users WHERE uuid = $1;", uuid).
+		Scan(&user.Id, &user.Uuid, &user.Name, &user.Email, &user.Password, &user.CreatedAt)
+	return
+}
+
 func CreateUser(name string, email string, password string) (user User) {
 	user = User{}
 	statement := "INSERT INTO users (uuid, name, email, password, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING id, uuid, name, email, password, created_at;"

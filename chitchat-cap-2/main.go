@@ -27,6 +27,12 @@ func main() {
 	mux.HandleFunc("/signup", signup)
 	mux.HandleFunc("/signup_account", signupAccount)
 
+	// Threads
+	mux.HandleFunc("/thread/new", newThread)
+	mux.HandleFunc("/thread/create", createThread)
+	mux.HandleFunc("/thread/post", postThread)
+	mux.HandleFunc("/thread/read", readThread)
+
 	// Create the server and start it
 	server := &http.Server{
 		Addr:    "0.0.0.0:8082",
