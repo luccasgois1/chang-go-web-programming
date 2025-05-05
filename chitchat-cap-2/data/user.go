@@ -48,3 +48,14 @@ func CreateUser(name string, email string, password string) (user User) {
 	}
 	return
 }
+
+func DeleteUser(email string) (err error) {
+	statement := "DELETE FROM users WHERE email = $1"
+	stmt, err := Db.Prepare(statement)
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(email)
+	return
+}

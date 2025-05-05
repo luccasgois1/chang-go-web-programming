@@ -12,7 +12,7 @@ create table threads (
    uuid       varchar(64) not null unique,
    topic      text,
    user_id    integer
-      references users ( id ),
+      references users ( id ) ON DELETE CASCADE,
    created_at timestamp not null
 );
 
@@ -21,9 +21,9 @@ create table posts (
    uuid       varchar(64) not null unique,
    body       text,
    user_id    integer
-      references users ( id ),
+      references users ( id ) ON DELETE CASCADE,
    thread_id  integer
-      references threads ( id ),
+      references threads ( id ) ON DELETE CASCADE,
    created_at timestamp not null
 );
 
@@ -31,6 +31,6 @@ create table sessions (
    id serial primary key,
    uuid varchar(64) not null unique,
    email varchar(255) not null unique,
-   user_id integer references users(id),
+   user_id integer references users(id) ON DELETE CASCADE,
    created_at timestamp not null
 )
