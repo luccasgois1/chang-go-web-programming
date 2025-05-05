@@ -76,7 +76,7 @@ func authenticate(w http.ResponseWriter, r *http.Request) {
 	} else {
 		// Goes back to the login page
 		log.Println("failed to authenticate due to incorrected password.")
-		http.Redirect(w, r, "/login", http.StatusFound)
+		redirectToErrorPage(w, r, errMessageForUser)
 	}
 }
 
@@ -223,4 +223,28 @@ func postThread(w http.ResponseWriter, r *http.Request) {
 		url := fmt.Sprint("/thread/read?id=", uuid)
 		http.Redirect(w, r, url, http.StatusFound)
 	}
+}
+
+func createTestUser(w http.ResponseWriter, r *http.Request) {
+	user := data.UserByEmail("test@test.com")
+	if user.IsEmpty() {
+		user = data.CreateUser(
+			"test",
+			"test@test.com",
+			"test")
+		if user.IsEmpty() {
+			log.Println("failed to create the user on database.")
+		}
+	} else {
+		log.Println("test user already created.")
+	}
+	http.Redirect(w, r, "/login", http.StatusFound)
+}
+
+func deleteTestUser(w http.ResponseWriter, r *http.Request) {
+	err := data.DeleteUser("test@test.com")
+	if err != nil {
+		log.Println("error: unable to delete test user", err)
+	}
+	http.Redirect(w, r, "/login", http.StatusFound)
 }

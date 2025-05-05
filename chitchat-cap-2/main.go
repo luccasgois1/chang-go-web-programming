@@ -33,6 +33,10 @@ func main() {
 	mux.HandleFunc("/thread/post", postThread)
 	mux.HandleFunc("/thread/read", readThread)
 
+	// test routes
+	mux.HandleFunc("/test/user/create", createTestUser)
+	mux.HandleFunc("/test/user/delete", deleteTestUser)
+
 	// Create the server and start it
 	server := &http.Server{
 		Addr:    "0.0.0.0:8082",
