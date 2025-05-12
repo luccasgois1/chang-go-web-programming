@@ -1,0 +1,7 @@
+{
+    "Host": "chitchat-db",
+    "User": "user",
+    "Password": "password",
+    "Name": "chitchat",
+    "Type": "postgres"
+}
